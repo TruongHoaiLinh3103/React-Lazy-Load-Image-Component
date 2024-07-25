@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Lazy Load Image Component</title>
+    <link href="./css/main.css" rel="stylesheet" />
+</head>
+<body>
+    <div style="text-align:center;">
+        <a href="https://github.com/Aljullu/react-lazy-load-image-component/"><img src="https://user-images.githubusercontent.com/3616980/44358570-afc8ac00-a4b5-11e8-8f7e-1ad9b7038ce5.png" alt="React Lazy Load Image Component Logo" style="max-width:463px;"/></a>
+    </div>
+    
+    <h1 id="react-lazy-load-image-component">React Lazy Load Image Component</h1>
+    <p>React Component to lazy load images and other components/elements. Supports IntersectionObserver and includes a HOC to track window scroll position to improve performance.</p>
+    <h2 id="live-demo-code"><a href="https://www.albertjuhe.com/react-lazy-load-image-component/">Live demo</a> (<a href="https://github.com/Aljullu/react-lazy-load-image-component-demo">code</a>)</h2>
+    <h2 id="features">Features</h2>
+    <ul>
+    <li>Includes two components (<code>LazyLoadImage</code> and <code>LazyLoadComponent</code>) and a HOC (<code>trackWindowScroll</code>) which adds scroll position tracking to any component you wish.</li>
+    <li>Handles scroll events, resize events and re-renders that might change the position of the components. And, of course, above-the-fold on initial render.</li>
+    <li>Placeholder by default with the same size of the image/component.</li>
+    <li>A custom placeholder component or image can be specified.</li>
+    <li>Built-in on-visible effects (blur, black and white and opacity transitions).</li>
+    <li>threshold is set to 100px by default and can be modified.</li>
+    <li><code>beforeLoad</code> and <code>onLoad</code> events.</li>
+    <li><code>debounce</code> and <code>throttle</code> included by default and configurable.</li>
+    <li>Uses IntersectionObserver for browsers that support it.</li>
+    <li>Server Side Rendering (SSR) compatible.</li>
+    <li><a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-lazy-load-image-component/index.d.ts">TypeScript declarations</a> hosted on DefinitelyTyped.</li>
+    </ul>
+    <h2 id="installation">Installation</h2>
+    <pre class="box-x"><code class="language-bash"># Yarn
+$ yarn add react-lazy-load-image-component
+
+# NPM
+$ npm i --save react-lazy-load-image-component
+    </code></pre>
+    <h2 id="lazyloadimage-usage"><code>LazyLoadImage</code> usage</h2>
+    <pre class="box-x"><code class="language-javascript">import React from &#39;react&#39;;
+import { LazyLoadImage } from &#39;react-lazy-load-image-component&#39;;
+
+const MyImage = ({ image }) =&gt; (
+    &lt;div&gt;
+        &lt;LazyLoadImage
+        alt={image.alt}
+        height={image.height}
+        src={image.src} // use normal &lt;img&gt; attributes as props
+        width={image.width} /&gt;
+        &lt;span&gt;{image.caption}&lt;/span&gt;
+    &lt;/div&gt;
+);
+
+export default MyImage;
+    </code></pre>
+    <h3 id="props">Props</h3>
+    <div class="box-x">
+        <table>
+            <thead>
+            <tr>
+            <th align="left">Prop</th>
+            <th align="left">Type</th>
+            <th align="left">Default</th>
+            <th align="left">Description</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td align="left">onLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called when the image has been loaded. This is the same function as the <code>onLoad</code> of an <code>&lt;img&gt;</code> which contains an event object.</td>
+            </tr>
+            <tr>
+            <td align="left">afterLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Deprecated, use <code>onLoad</code> instead. This prop is only for backward compatibility.</td>
+            </tr>
+            <tr>
+            <td align="left">beforeLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called right before the placeholder is replaced with the image element.</td>
+            </tr>
+            <tr>
+            <td align="left">delayMethod</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"><code>throttle</code></td>
+            <td align="left">Method from lodash to use to delay the scroll/resize events. It can be <code>throttle</code> or <code>debounce</code>.</td>
+            </tr>
+            <tr>
+            <td align="left">delayTime</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">300</td>
+            <td align="left">Time in ms sent to the delayMethod.</td>
+            </tr>
+            <tr>
+            <td align="left">effect</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"></td>
+            <td align="left">Name of the effect to use. Please, read next section with an explanation on how to use them.</td>
+            </tr>
+            <tr>
+            <td align="left">placeholder</td>
+            <td align="left"><code>ReactClass</code></td>
+            <td align="left"><code>&lt;span&gt;</code></td>
+            <td align="left">React element to use as a placeholder.</td>
+            </tr>
+            <tr>
+            <td align="left">placeholderSrc</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"></td>
+            <td align="left">Image src to display while the image is not visible or loaded.</td>
+            </tr>
+            <tr>
+            <td align="left">threshold</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">100</td>
+            <td align="left">Threshold in pixels. So the image starts loading before it appears in the viewport.</td>
+            </tr>
+            <tr>
+            <td align="left">useIntersectionObserver</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">true</td>
+            <td align="left">Whether to use browser&#39;s IntersectionObserver when available.</td>
+            </tr>
+            <tr>
+            <td align="left">visibleByDefault</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">false</td>
+            <td align="left">Whether the image must be visible from the beginning.</td>
+            </tr>
+            <tr>
+            <td align="left">wrapperClassName</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"></td>
+            <td align="left">In some occasions (for example, when using a placeholderSrc) a wrapper span tag is rendered. This prop allows setting a class to that element.</td>
+            </tr>
+            <tr>
+            <td align="left">wrapperProps</td>
+            <td align="left"><code>Object</code></td>
+            <td align="left">null</td>
+            <td align="left">Props that should be passed to the wrapper span when it is rendered (for example, when using placeholderSrc or effect)</td>
+            </tr>
+            <tr>
+            <td align="left">...</td>
+            <td align="left"></td>
+            <td align="left"></td>
+            <td align="left">Any other image attribute</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <h3 id="using-effects">Using effects</h3>
+    <p><code>LazyLoadImage</code> includes several effects ready to be used, they are useful to add visual candy to your application, but are completely optional in case you don&#39;t need them or want to implement you own effect.</p>
+    <p>They rely on CSS and the corresponding CSS file must be imported:</p>
+    <pre class="box-x"><code class="language-javascript">import React from &#39;react&#39;;
+import { LazyLoadImage } from &#39;react-lazy-load-image-component&#39;;
+import &#39;react-lazy-load-image-component/src/effects/blur.css&#39;;
+
+const MyImage = ({ image }) =&gt; (
+    &lt;LazyLoadImage
+    alt={image.alt}
+    effect=&quot;blur&quot;
+    wrapperProps={{
+        // If you need to, you can tweak the effect transition using the wrapper style.
+        style: {transitionDelay: &quot;1s&quot;},
+    }}
+    src={image.src} /&gt;
+);
+    </code></pre>
+    <p>The current available effects are:</p>
+    <ul>
+    <li><code>blur</code>: renders a blurred image based on <code>placeholderSrc</code> and transitions to a non-blurred one when the image specified in the src is loaded.</li>
+    </ul>
+    <p><img src="https://user-images.githubusercontent.com/3616980/37790728-9f95529a-2e07-11e8-8ac3-5066c065e0af.gif" alt="Screenshot of the blur effect"></p>
+    <ul>
+    <li><code>black-and-white</code>: renders a black and white image based on <code>placeholderSrc</code> and transitions to a colorful image when the image specified in the src is loaded.</li>
+    </ul>
+    <p><img src="https://user-images.githubusercontent.com/3616980/37790682-864e58d6-2e07-11e8-8984-ad5d7b056d9f.gif" alt="Screenshot of the black-and-white effect"></p>
+    <ul>
+    <li><code>opacity</code>: renders a blank space and transitions to full opacity when the image is loaded.</li>
+    </ul>
+    <p><img src="https://user-images.githubusercontent.com/3616980/37790755-b48a704a-2e07-11e8-91c3-fcd43a91e7b1.gif" alt="Screenshot of the opacity effect"></p>
+    <p>All the effects have a transition duration of 0.3 seconds by default, without transition delay and the default transition timing function. All those values can be modified overriding the wrapper style as shown in the code example above.</p>
+    <h2 id="lazyloadcomponent-usage"><code>LazyLoadComponent</code> usage</h2>
+    <pre class="box-x"><code class="language-javascript">import React from &#39;react&#39;;
+import { LazyLoadComponent } from &#39;react-lazy-load-image-component&#39;;
+import { ArticleContent, ArticleComments } from &#39;my-app&#39;;
+
+const Article = ({ articleId }) =&gt; (
+    &lt;div&gt;
+        &lt;ArticleContent id={articleId} /&gt;
+        &lt;LazyLoadComponent&gt;
+        &lt;ArticleComments id={articleId} /&gt;
+        &lt;/LazyLoadComponent&gt;
+    &lt;/div&gt;
+);
+
+export default Article;
+    </code></pre>
+    <h3 id="props-1">Props</h3>
+    <div class="box-x">
+        <table>
+            <thead>
+            <tr>
+            <th align="left">Prop</th>
+            <th align="left">Type</th>
+            <th align="left">Default</th>
+            <th align="left">Description</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td align="left">afterLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called after the component has been rendered.</td>
+            </tr>
+            <tr>
+            <td align="left">beforeLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called right before the component is rendered.</td>
+            </tr>
+            <tr>
+            <td align="left">delayMethod</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"><code>throttle</code></td>
+            <td align="left">Method from lodash to use to delay the scroll/resize events. It can be <code>throttle</code> or <code>debounce</code>.</td>
+            </tr>
+            <tr>
+            <td align="left">delayTime</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">300</td>
+            <td align="left">Time in ms sent to the delayMethod from lodash.</td>
+            </tr>
+            <tr>
+            <td align="left">placeholder</td>
+            <td align="left"><code>ReactClass</code></td>
+            <td align="left"><code>&lt;span&gt;</code></td>
+            <td align="left">React element to use as a placeholder.</td>
+            </tr>
+            <tr>
+            <td align="left">threshold</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">100</td>
+            <td align="left">Threshold in pixels. So the component starts loading before it appears in the viewport.</td>
+            </tr>
+            <tr>
+            <td align="left">useIntersectionObserver</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">true</td>
+            <td align="left">Whether to use browser&#39;s IntersectionObserver when available.</td>
+            </tr>
+            <tr>
+            <td align="left">visibleByDefault</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">false</td>
+            <td align="left">Whether the component must be visible from the beginning.</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <h2 id="using-trackwindowscroll-hoc-to-improve-performance">Using <code>trackWindowScroll</code> HOC to improve performance</h2>
+    <p>When you have many elements to lazy load in the same page, you might get poor performance because each one is listening to the scroll/resize events. In that case, it&#39;s better to wrap the deepest common parent of those components with a HOC to track those events (<code>trackWindowScroll</code>).</p>
+    <p>For example, if we have an <code>App</code> which renders a <code>Gallery</code>, we would wrap the <code>Gallery</code> component with the HOC.</p>
+    <pre class="box-x"><code class="language-javascript">import React from &#39;react&#39;;
+import { LazyLoadImage, trackWindowScroll }
+from &#39;react-lazy-load-image-component&#39;;
+
+const Gallery = ({ images, scrollPosition }) =&gt; (
+    &lt;div&gt;
+        {images.map((image) =&gt;
+            &lt;LazyLoadImage
+                key={image.key}
+                alt={image.alt}
+                height={image.height}
+                // Make sure to pass down the scrollPosition,
+                // this will be used by the component to know
+                // whether it must track the scroll position or not
+                scrollPosition={scrollPosition}
+                src={image.src}
+                width={image.width} /&gt;
+        )}
+    &lt;/div&gt;
+);
+// Wrap Gallery with trackWindowScroll HOC so it receives
+// a scrollPosition prop to pass down to the images
+export default trackWindowScroll(Gallery);
+    </code></pre>
+    <p>You must set the prop <code>scrollPosition</code> to the lazy load components. This way, they will know the scroll/resize events are tracked by a parent component and will not subscribe to them.</p>
+    <h3 id="props-2">Props</h3>
+    <p><code>LazyLoadImage</code></p>
+    <div class="box-x">
+        <table>
+            <thead>
+            <tr>
+            <th align="left">Prop</th>
+            <th align="left">Type</th>
+            <th align="left">Default</th>
+            <th align="left">Description</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td align="left">scrollPosition</td>
+            <td align="left"><code>Object</code></td>
+            <td align="left"></td>
+            <td align="left">Object containing <code>x</code> and <code>y</code> with the curent window scroll position. Required.</td>
+            </tr>
+            <tr>
+            <td align="left">onLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called when the image has been loaded. This is the same function as the <code>onLoad</code> of an <code>&lt;img&gt;</code> which contains an event object.</td>
+            </tr>
+            <tr>
+            <td align="left">afterLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Deprecated, use <code>onLoad</code> instead. This prop is only for backward compatibility.</td>
+            </tr>
+            <tr>
+            <td align="left">beforeLoad</td>
+            <td align="left"><code>Function</code></td>
+            <td align="left"></td>
+            <td align="left">Function called right before the image is rendered.</td>
+            </tr>
+            <tr>
+            <td align="left">placeholder</td>
+            <td align="left"><code>ReactClass</code></td>
+            <td align="left"><code>&lt;span&gt;</code></td>
+            <td align="left">React element to use as a placeholder.</td>
+            </tr>
+            <tr>
+            <td align="left">threshold</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">100</td>
+            <td align="left">Threshold in pixels. So the image starts loading before it appears in the viewport.</td>
+            </tr>
+            <tr>
+            <td align="left">visibleByDefault</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">false</td>
+            <td align="left">Whether the image must be visible from the beginning.</td>
+            </tr>
+            <tr>
+            <td align="left">wrapperProps</td>
+            <td align="left"><code>Object</code></td>
+            <td align="left">null</td>
+            <td align="left">Props that should be passed to the wrapper span when it is rendered (for example, when using placeholderSrc or effect)</td>
+            </tr>
+            <tr>
+            <td align="left">...</td>
+            <td align="left"></td>
+            <td align="left"></td>
+            <td align="left">Any other image attribute</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <p>Component wrapped with <code>trackWindowScroll</code> (in the example, <code>Gallery</code>)</p>
+    <div class="box-x">
+        <table>
+            <thead>
+            <tr>
+            <th align="left">Prop</th>
+            <th align="left">Type</th>
+            <th align="left">Default</th>
+            <th align="left">Description</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+            <td align="left">delayMethod</td>
+            <td align="left"><code>String</code></td>
+            <td align="left"><code>throttle</code></td>
+            <td align="left">Method from lodash to use to delay the scroll/resize events. It can be <code>throttle</code> or <code>debounce</code>.</td>
+            </tr>
+            <tr>
+            <td align="left">delayTime</td>
+            <td align="left"><code>Number</code></td>
+            <td align="left">300</td>
+            <td align="left">Time in ms sent to the delayMethod from lodash.</td>
+            </tr>
+            <tr>
+            <td align="left">useIntersectionObserver</td>
+            <td align="left"><code>Boolean</code></td>
+            <td align="left">true</td>
+            <td align="left">Whether to use browser&#39;s IntersectionObserver when available.</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <p>Notice you can do the same replacing <code>LazyLoadImage</code> with <code>LazyLoadComponent</code>.</p>
+    <h2 id="when-to-use-visiblebydefault">When to use <code>visibleByDefault</code>?</h2>
+    <p>The prop <code>visibleByDefault</code> makes the LazyLoadImage to behave like a normal <code>&lt;img&gt;</code>. Why is it useful, then?</p>
+    <p>Imagine you are going to lazy-load an image you have already loaded in the same page. In that case, there is no need to lazy-load it because it&#39;s already stored in the cache of the user&#39;s browser. You can directly display it.</p>
+    <p>Maybe the following code snippet will make it more clear:</p>
+    <pre class="box-x"><code class="language-javascript">import React from &#39;react&#39;;
+import { LazyLoadImage, trackWindowScroll }
+from &#39;react-lazy-load-image-component&#39;;
+
+const Gallery = ({ images, scrollPosition }) =&gt; (
+    &lt;div&gt;
+        // We are loading landscape.jpg here
+        &lt;img src=&quot;/landscape.jpg&quot; alt=&quot;Beautiful landscape&quot; /&gt;
+        {images.map((image) =&gt;
+            &lt;LazyLoadImage
+                key={image.key}
+                alt={image.alt}
+                scrollPosition={scrollPosition}
+                src={image.src}
+                // If the image we are creating here has the same src than before,
+                // we can directly display it with no need to lazy-load.
+                visibleByDefault={image.src === &#39;/landscape.jpg&#39;} /&gt;
+        )}
+    &lt;/div&gt;
+);
+
+export default trackWindowScroll(Gallery);
+    </code></pre>
+    <h2 id="demos">Demos</h2>
+    <p><img src="https://user-images.githubusercontent.com/3616980/37790133-ecbe042e-2e05-11e8-940b-aee50ba8df06.gif" alt="Screenshot of the react-lazy-load-image-component in use"></p>
+    <ul>
+    <li><a href="https://github.com/Aljullu/weather-app">weather-app</a></li>
+    <li><a href="https://github.com/Aljullu/react-flickr-gallery">react-flickr-gallery</a></li>
+    <li><a href="https://github.com/Aljullu/react-lazy-load-image-component-demo">react-lazy-load-image-component-demo</a></li>
+    </ul>
+    <h2 id="common-errors">Common errors</h2>
+    <h3 id="all-images-are-being-loaded-at-once">All images are being loaded at once</h3>
+    <p>This package loads images when they are visible in the viewport. Before an image is loaded, it occupies 0x0 pixels, so if you have a gallery of images, that means all images will be in the visible part of the page until the first ones load and start pushing down the other ones.</p>
+    <p>To fix this issue, make sure you either set a <code>height</code> and <code>width</code> props or a <code>placeholder</code> to your images.</p>
+    <h3 id="effects-are-not-working">Effects are not working</h3>
+    <p>You need to import the effect CSS as shown in the <a href="#using-effects">Using effects</a> code example.</p>
+    <p>Also, notice browsers might behave differently while images are loading. Some times, while an image is not completely loaded yet, the browser will show a white background behind it, making the effect not to be visible. This is an issue with browsers and not something that can be fixed in this package.</p>
+    <h3 id="warning-setstate-can-only-update-a-mounted-or-mounting-component">Warning: setState(...): Can only update a mounted or mounting component.</h3>
+    <p>That warning might appear if there are two components using <code>trackWindowScroll</code> at the same time. Notice it&#39;s not possible to have a LazyLoadImage/LazyLoadComponent inside another LazyLoadComponent for now. Also, make sure you are passing down <code>scrollPosition</code> to all components wrapped inside <code>trackWindowScroll</code>.</p>      
+</body>
+</html>
